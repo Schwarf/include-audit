@@ -17,6 +17,8 @@ static std::string getArgValue(int& i, int argc, char** argv, const char* opt) {
 }
 
 int main(int argc, char** argv) {
+
+
     try {
         std::string compdbPath;
         int limit = 10;
