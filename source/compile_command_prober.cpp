@@ -11,7 +11,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-extern char** environ;
+extern char **environ;
 
 CompileCommandProber::CompileCommandProber(Options opt) : options(opt)
 {
@@ -98,7 +98,7 @@ std::vector<std::string> CompileCommandProber::buildBaseArgv(const CompileComman
 {
     if (!compileCommand.arguments.empty())
         return compileCommand.arguments;
-    if (!compileCommand.command.has_value())
+    if (compileCommand.command.has_value())
         return splitCommand(compileCommand.command.value());
 
     // Should not happen given your loader checks, but keep it safe.
