@@ -37,6 +37,12 @@ public:
     // Probe many compile commands. Returns vector of results.
     std::vector<ProbeResult> probeAll(const std::vector<CompileCommand>& cmds) const;
 
+    // Build the probe argv for this TU (what probeOne would run)
+    std::vector<std::string> buildProbeArgv(const CompileCommand& cc) const;
+
+    // Run an argv in the TU directory (same behavior as probing)
+    int runArgvInDirectory(const std::vector<std::string>& argv, const std::string& directory) const;
+
 private:
     Options options;
 

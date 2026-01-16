@@ -18,6 +18,7 @@ add_executable(include-audit
         source/main.cpp
         source/compile_db.cpp
         source/compile_command_prober.cpp
+        source/include_auditor.cpp
 )
 
 target_include_directories(include-audit PRIVATE include)

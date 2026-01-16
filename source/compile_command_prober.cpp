@@ -17,6 +17,13 @@ CompileCommandProber::CompileCommandProber(Options opt) : options(opt)
 {
 }
 
+std::vector<std::string> CompileCommandProber::buildProbeArgv(const CompileCommand& cc) const {
+    return makeProbeArgv(cc);
+}
+
+int CompileCommandProber::runArgvInDirectory(const std::vector<std::string>& argv, const std::string& directory) const {
+    return runInDirectory(argv, directory);
+}
 
 // Minimal shell-ish splitter for compile_commands "command" string.
 // Handles spaces, single/double quotes, and backslash escapes.
