@@ -2,7 +2,6 @@
 #include "compile_command_prober.h"
 #include "include_auditor.h"
 
-#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -10,7 +9,9 @@
 static void usage(const char* argv0) {
     std::cerr
         << "Usage:\n"
-        << "  " << argv0 << " --compdb <path> [--limit N] [--probe] [--print-probe-cmd]\n";
+        << "  " << argv0
+        << " --compdb <path> [--file <path-fragment>] [--limit N] [--probe] [--print-probe-cmd] "
+        << "[--audit-includes] [--audit-verbose] [--audit-only-quoted]\n";
 }
 
 static std::string getArgValue(int& i, int argc, char** argv, const char* opt) {
@@ -22,6 +23,7 @@ int main(int argc, char** argv) {
     try {
         std::string compdbPath;
         int limit = 10;
+        std::string fileFilter;
         bool doProbe = false;
         bool printProbeCmd = false;
         bool doAudit = false;
@@ -35,6 +37,8 @@ int main(int argc, char** argv) {
             } else if (a == "--limit") {
                 limit = std::stoi(getArgValue(i, argc, argv, "--limit"));
                 if (limit < 0) limit = 0;
+            } else if (a == "--file") {
+                fileFilter = getArgValue(i, argc, argv, "--file");
             } else if (a == "--probe") {
                 doProbe = true;
             } else if (a == "--print-probe-cmd") {
@@ -49,8 +53,7 @@ int main(int argc, char** argv) {
                 verboseAudit = true;
             } else if (a == "--audit-only-quoted") {
                 onlyQuoted = true;
-            }
-            else {
+            } else {
                 std::cerr << "Unknown option: " << a << "\n";
                 usage(argv[0]);
                 return 2;
@@ -63,6 +66,20 @@ int main(int argc, char** argv) {
         }
 
         auto commands = loadCompileCommands(compdbPath);
+        if (!fileFilter.empty()) {
+            std::vector<CompileCommand> filtered;
+            for (const auto& cc : commands) {
+                if (cc.file.find(fileFilter) != std::string::npos) {
+                    filtered.push_back(cc);
+                }
+            }
+            commands = std::move(filtered);
+
+            if (commands.empty()) {
+                std::cerr << "No compile command matched --file " << fileFilter << "\n";
+                return 1;
+            }
+        }
 
         std::cout << "Compilation database entries: " << commands.size() << "\n";
         const int showN = std::min<int>(limit, (int)commands.size());
